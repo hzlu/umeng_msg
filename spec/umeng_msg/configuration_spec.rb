@@ -2,29 +2,33 @@ require 'spec_helper'
 
 module UmengMsg
   describe Configuration do
-    describe '#appkey' do
-      it 'default value is appkey' do
-        default = Configuration.new.appkey
-        expect(default).to eq 'appkey'
+    describe 'default config' do
+      let(:default) {Configuration.new}
+      it 'ios_appkey' do
+        expect(default.ios_appkey).to eq 'ios_appkey'
       end
-      it 'can set value' do
-        config = Configuration.new
-        config.appkey = 'new appkey'
-        expect(config.appkey).to eq 'new appkey'
+
+      it 'ios_app_master_secret' do
+        expect(default.ios_app_master_secret).to eq 'ios_secret'
+      end
+
+      it 'android_appkey' do
+        expect(default.android_appkey).to eq 'android_appkey'
+      end
+      it 'android_app_master_secret' do
+        expect(default.android_app_master_secret).to eq 'android_secret'
+      end
+      it 'production_mode' do
+        expect(default.production_mode).to eq 'false'
       end
     end
 
-    describe '#app_master_secret' do
-      it 'default value is secret' do
-        default = Configuration.new.app_master_secret
-        expect(default).to eq 'secret'
-      end
-      it 'can set value' do
+    describe 'change mode' do
+      it 'change to be true' do
         config = Configuration.new
-        config.app_master_secret = 'new secret'
-        expect(config.app_master_secret).to eq 'new secret'
+        config.production_mode = 'true'
+        expect(config.production_mode).to eq 'true'
       end
-
     end
   end
 end
