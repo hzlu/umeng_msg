@@ -1,12 +1,10 @@
 # coding: utf-8
 require "umeng_msg/version"
-require 'pry'
 require "umeng_msg/configuration"
 require "umeng_msg/subject"
 require 'umeng_msg/logger'
 require 'umeng_msg/params'
 require 'umeng_msg/sign'
-require 'umeng_msg/result'
 
 module UmengMsg
 

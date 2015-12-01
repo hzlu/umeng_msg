@@ -3,7 +3,7 @@ require 'rest-client'
 
 module UmengMsg
   class Subject
-    attr_reader :payload, :ret, :data
+    attr_reader :payload, :ret, :task_id, :error_code, :file_id, :platform, :content
     CAST_TYPE  = %w|unicast listcast filecast broadcast groupcast customizedcast|
     PUSH_URL   = 'http://msg.umeng.com/api/send'
     CHECK_URL  = 'http://msg.umeng.com/api/status'
@@ -11,11 +11,12 @@ module UmengMsg
     UPLOAD_URL = 'http://msg.umeng.com/upload'
 
     def initialize(platform, **options)
-      @platform = platform
-      @payload = Params.push_params(platform, **options)
-      @content = options['content']
-      @ret = 'PENDING'
-      @error_code, @file_id, @task_id = nil
+      @platform          = platform
+      @payload           = Params.push_params(platform, **options)
+      @content           = options['content']
+      @file_id, @task_id = nil
+      @ret               = { push: nil, check: nil, cancel: nil, upload: nil }
+      @error_code        = { push: nil, check: nil, cancel: nil, upload: nil }
     end
 
     def push
@@ -60,31 +61,30 @@ module UmengMsg
     private
 
     def parse_res response
-      res_hsh = JSON.parse(response)
-      @ret  = res_hsh['ret']
-      @data = res_hsh['data']
+      res_hsh            = JSON.parse(response)
+      @ret[:push]        = res_hsh['ret']
+      @error_code[:push] = res_hsh['data']['error_code']
+      @task_id           = res_hsh['data']['task_id']
     end
 
     def check_parse
-      res_hsh = JSON.parse(response)
-      @ret  = res_hsh['ret']
-      @task_id = res_hsh['data']['task_id']
-      @error_code = res_hsh['data']['error_code']
-      @data = res_hsh['data']
+      res_hsh             = JSON.parse(response)
+      @ret[:check]        = res_hsh['ret']
+      @error_code[:check] = res_hsh['data']['error_code']
+      @check_data         = res_hsh['data']
     end
 
     def cancel_parse
-      res_hsh = JSON.parse(response)
-      @ret  = res_hsh['ret']
-      @task_id = res_hsh['data']['task_id']
-      @error_code = res_hsh['data']['error_code']
+      res_hsh              = JSON.parse(response)
+      @ret[:cancel]        = res_hsh['ret']
+      @error_code[:cancel] = res_hsh['data']['error_code']
     end
 
     def upload_parse response
-      res_hsh = JSON.parse(response)
-      @ret  = res_hsh['ret']
-      @file_id = res_hsh['data']['file_id']
-      @error_code = res_hsh['data']['error_code']
+      res_hsh              = JSON.parse(response)
+      @ret[:upload]        = res_hsh['ret']
+      @error_code[:upload] = res_hsh['data']['error_code']
+      @file_id             = res_hsh['data']['file_id']
     end
   end
 end
