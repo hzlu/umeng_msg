@@ -10,6 +10,7 @@ module UmengMsg
         'type'            => options['type'],
         'device_tokens'   => options['device_tokens'],
         'alias_type'      => options['alias_type'],
+        'alias'           => options['alias'],
         'file_id'         => options['file_id'],
         'policy'          => {
                                'start_time'   => options['start_time'],
@@ -31,6 +32,7 @@ module UmengMsg
             'content-available' => options['content-available'],
             'category'          => options['category']
           },
+          'extra' => options['extra'] || {}
         }
       }
       android_payload = {
@@ -53,8 +55,7 @@ module UmengMsg
             'activity'     => options['activity'],
             'custom'       => options['custom']
           },
-          'extra' => {
-          }
+          'extra' => options['extra'] || {}
         }
 
       }
@@ -99,4 +100,3 @@ module UmengMsg
     end
   end
 end
-
