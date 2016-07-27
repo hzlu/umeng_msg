@@ -75,7 +75,7 @@ module UmengMsg
       #   }.merge(params)
       # end
 
-      platform.downcase == 'ios' ? params.merge(ios_payload) : params.merge(android_payload)
+      platform.downcase == 'ios' ? params.merge!(ios_payload) : params.merge!(android_payload)
       params = compact_params(params)
     end
 
