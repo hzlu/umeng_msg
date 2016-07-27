@@ -3,13 +3,14 @@ module UmengMsg
   module Params
     extend self
 
-    def push_params(platform, **options)
+    def push_params(platform, options)
       params = {
         'appkey'          => UmengMsg.appkey(platform),
         'timestamp'       => Time.now.to_i.to_s,
         'type'            => options['type'],
         'device_tokens'   => options['device_tokens'],
         'alias_type'      => options['alias_type'],
+        'alias'           => options['alias'],
         'file_id'         => options['file_id'],
         'policy'          => {
                                'start_time'   => options['start_time'],
@@ -31,6 +32,8 @@ module UmengMsg
             'content-available' => options['content-available'],
             'category'          => options['category']
           },
+          'title' => options['title'],
+          'extra' => options['extra'] || {}
         }
       }
       android_payload = {
@@ -53,8 +56,7 @@ module UmengMsg
             'activity'     => options['activity'],
             'custom'       => options['custom']
           },
-          'extra' => {
-          }
+          'extra' => options['extra'] || {}
         }
 
       }
@@ -72,7 +74,8 @@ module UmengMsg
       #   }.merge(params)
       # end
 
-      platform.downcase == 'ios' ? params.merge(ios_payload) : params.merge(android_payload)
+      platform.downcase == 'ios' ? params.merge!(ios_payload) : params.merge!(android_payload)
+      params = compact_params(params)
     end
 
     def check_params(platform, task_id)
@@ -97,6 +100,12 @@ module UmengMsg
         'content'   => content
       }
     end
+
+    private
+    #取出nil的key 不然友盟解析json出错
+    def compact_params(params)
+      custom_compact = Proc.new { |k, v| v.delete_if(&custom_compact) if v.kind_of?(Hash);  v.blank? }
+      params.delete_if &custom_compact
+    end
   end
 end
-
