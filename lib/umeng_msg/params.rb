@@ -104,7 +104,7 @@ module UmengMsg
 
     private
     def compact_params(params)
-      custom_compact = Proc.new { |k, v| v.delete_if(&swoop) if v.kind_of?(Hash);  v.blank? }
+      custom_compact = Proc.new { |k, v| v.delete_if(&custom_compact) if v.kind_of?(Hash);  v.blank? }
       params.delete_if &custom_compact
     end
   end
