@@ -76,6 +76,7 @@ module UmengMsg
       # end
 
       platform.downcase == 'ios' ? params.merge(ios_payload) : params.merge(android_payload)
+      params = compact_params(params)
     end
 
     def check_params(platform, task_id)
@@ -99,6 +100,12 @@ module UmengMsg
         'timestamp' => Time.now.to_i.to_s,
         'content'   => content
       }
+    end
+
+    private
+    def compact_params(params)
+      custom_compact = Proc.new { |k, v| v.delete_if(&swoop) if v.kind_of?(Hash);  v.blank? }
+      params.delete_if &custom_compact
     end
   end
 end
