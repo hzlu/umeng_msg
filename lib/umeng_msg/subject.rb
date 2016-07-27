@@ -11,6 +11,7 @@ module UmengMsg
     UPLOAD_URL = 'http://msg.umeng.com/upload'
 
     def initialize(platform, **options)
+      Rails.logger.error "传递参数为#{options}\n"
       @platform          = platform
       @payload           = Params.push_params(platform, **options)
       @content           = options['content']
@@ -88,4 +89,3 @@ module UmengMsg
     end
   end
 end
-

@@ -4,6 +4,7 @@ module UmengMsg
     extend self
 
     def push_params(platform, **options)
+      Rails.logger.error "传递参数为#{options}\n"
       params = {
         'appkey'          => UmengMsg.appkey(platform),
         'timestamp'       => Time.now.to_i.to_s,
@@ -32,6 +33,7 @@ module UmengMsg
             'content-available' => options['content-available'],
             'category'          => options['category']
           },
+          'title' => options['title'],
           'extra' => options['extra'] || {}
         }
       }
