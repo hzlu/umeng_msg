@@ -10,10 +10,10 @@ module UmengMsg
     CANCEL_URL = 'http://msg.umeng.com/api/cancel'
     UPLOAD_URL = 'http://msg.umeng.com/upload'
 
-    def initialize(platform, **options)
+    def initialize(platform, options)
       Rails.logger.error "传递参数为#{options}\n"
       @platform          = platform
-      @payload           = Params.push_params(platform, **options)
+      @payload           = Params.push_params(platform, options)
       @content           = options['content']
       @file_id, @task_id = nil
       @ret               = { push: nil, check: nil, cancel: nil, upload: nil }
