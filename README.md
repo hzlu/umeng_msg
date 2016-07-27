@@ -28,7 +28,7 @@ Or install it yourself as:
 4. 推送相关options参数请参看官方文档， check 与 cancel 只需要 task_id参数, upload 只需要content 参数
 5. 返回结果以error_code 为nil 表示发送成功, error_code 为999 时为网络等错误与友盟无关
 6. 拓展或自定义功能请自行拓展
-
+7. 默认请求超时是3秒
 
 ## Development
 
