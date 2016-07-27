@@ -35,7 +35,7 @@ module UmengMsg
     def post_youmeng(url, payload)
       sign = Sign.generate @platform, url, payload
       begin
-        parse_res RestClient.post("#{url}?sign=#{sign}", payload.to_json, content_type: :json, accept: :json)
+        parse_res RestClient.post("#{url}?sign=#{sign}", payload.to_json, timeout: 3, open_timeout: 3, content_type: :json, accept: :json)
       rescue => e
         error_result e.message
       end
