@@ -31,7 +31,7 @@ module UmengMsg
             'badge'             => options[:badge],
             'sound'             => options[:sound],
             'content-available' => options[:content-available],
-            'category'          => options[:category']
+            'category'          => options[:category]
           },
           'title' => options[:title],
           'extra' => options[:extra] || {}
