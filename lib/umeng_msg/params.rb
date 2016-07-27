@@ -4,7 +4,6 @@ module UmengMsg
     extend self
 
     def push_params(platform, options)
-      Rails.logger.error "传递参数为#{options}\n"
       params = {
         'appkey'          => UmengMsg.appkey(platform),
         'timestamp'       => Time.now.to_i.to_s,
@@ -103,6 +102,7 @@ module UmengMsg
     end
 
     private
+    #取出nil的key 不然友盟解析json出错
     def compact_params(params)
       custom_compact = Proc.new { |k, v| v.delete_if(&custom_compact) if v.kind_of?(Hash);  v.blank? }
       params.delete_if &custom_compact

@@ -11,81 +11,53 @@ module UmengMsg
     UPLOAD_URL = 'http://msg.umeng.com/upload'
 
     def initialize(platform, options)
-      Rails.logger.error "传递参数为#{options}\n"
       @platform          = platform
-      @payload           = Params.push_params(platform, options)
+      @options           = options
       @content           = options['content']
-      @file_id, @task_id = nil
-      @ret               = { push: nil, check: nil, cancel: nil, upload: nil }
-      @error_code        = { push: nil, check: nil, cancel: nil, upload: nil }
+      @file_id, @task_id = nil, nil
     end
 
     def push
+      @payload = Params.push_params(@platform, @options)
       sign = Sign.generate @platform, PUSH_URL, @payload
-      begin
-        parse_res RestClient.post("#{PUSH_URL}?sign=#{sign}", @payload.to_json, content_type: :json, accept: :json)
-      rescue => e
-        parse_res e.response
-      end
+      post_youmeng(PUSH_URL, sign, @payload)
     end
 
     def check
       @check_payload = Params.check_params(@platform, @task_id)
       sign = Sign.generate @platform, CHECK_URL, @check_payload
-      begin
-        parse_res RestClient.post("#{CHECK_URL}?sign=#{sign}", @check_payload.to_json, content_type: :json, accept: :json)
-      rescue => e
-        parse_res e.response
-      end
+      post_youmeng(CHECK_URL, sign, @check_payload)
     end
 
     def cancel
       @cancel_payload = Params.cancel_params(@platform, @task_id)
       sign = Sign.generate @platform, CANCEL_URL, @cancel_payload
-      begin
-        parse_res RestClient.post("#{CANCEL_URL}?sign=#{sign}", @cancel_payload.to_json, content_type: :json, accept: :json)
-      rescue => e
-        parse_res e.response
-      end
+      post_youmeng(CANCEL_URL, sign, @cancel_payload)
     end
 
     def upload
       @upload_payload = Params.upload_params(@platform, @content)
       sign = Sign.generate @platform, CANCEL_URL, @upload_payload
-      begin
-        parse_res RestClient.post("#{UPLOAD_URL}?sign=#{sign}", @upload_payload.to_json, content_type: :json, accept: :json)
-      rescue => e
-        parse_res e.response
-      end
+      post_youmeng(UPLOAD_URL, sign, @upload_payload)
     end
 
     private
+    def post_youmeng(url, sign, body)
+      begin
+        parse_res RestClient.post("#{url}?sign=#{sign}", body.to_json, content_type: :json, accept: :json)
+      rescue => e
+        error_result e.message
+      end
+    end
 
     def parse_res response
-      res_hsh            = JSON.parse(response)
-      @ret[:push]        = res_hsh['ret']
-      @error_code[:push] = res_hsh['data']['error_code']
-      @task_id           = res_hsh['data']['task_id']
+      result            = JSON.parse(response)
+      {result: result['ret'], error_code: result['data']['error_code'], data: result['data']}
     end
 
-    def check_parse
-      res_hsh             = JSON.parse(response)
-      @ret[:check]        = res_hsh['ret']
-      @error_code[:check] = res_hsh['data']['error_code']
-      @check_data         = res_hsh['data']
+    def error_result(error_message)
+      {result: error_message, error_code: '999', data: {}}
     end
 
-    def cancel_parse
-      res_hsh              = JSON.parse(response)
-      @ret[:cancel]        = res_hsh['ret']
-      @error_code[:cancel] = res_hsh['data']['error_code']
-    end
-
-    def upload_parse response
-      res_hsh              = JSON.parse(response)
-      @ret[:upload]        = res_hsh['ret']
-      @error_code[:upload] = res_hsh['data']['error_code']
-      @file_id             = res_hsh['data']['file_id']
-    end
   end
 end
