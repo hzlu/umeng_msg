@@ -13,38 +13,29 @@ module UmengMsg
     def initialize(platform, options)
       @platform          = platform
       @options           = options
-      @content           = options['content']
-      @file_id, @task_id = nil, nil
     end
 
     def push
-      @payload = Params.push_params(@platform, @options)
-      sign = Sign.generate @platform, PUSH_URL, @payload
-      post_youmeng(PUSH_URL, sign, @payload)
+      post_youmeng(CANCEL_URL, Params.push_params(@platform, @options))
     end
 
     def check
-      @check_payload = Params.check_params(@platform, @task_id)
-      sign = Sign.generate @platform, CHECK_URL, @check_payload
-      post_youmeng(CHECK_URL, sign, @check_payload)
+      post_youmeng(CANCEL_URL, Params.check_params(@platform, @options['task_id']))
     end
 
     def cancel
-      @cancel_payload = Params.cancel_params(@platform, @task_id)
-      sign = Sign.generate @platform, CANCEL_URL, @cancel_payload
-      post_youmeng(CANCEL_URL, sign, @cancel_payload)
+      post_youmeng(CANCEL_URL, Params.cancel_params(@platform, @options['task_id']))
     end
 
     def upload
-      @upload_payload = Params.upload_params(@platform, @content)
-      sign = Sign.generate @platform, CANCEL_URL, @upload_payload
-      post_youmeng(UPLOAD_URL, sign, @upload_payload)
+      post_youmeng(UPLOAD_URL, Params.upload_params(@platform, @options['content']))
     end
 
     private
-    def post_youmeng(url, sign, body)
+    def post_youmeng(url, payload)
+      sign = Sign.generate @platform, url, payload
       begin
-        parse_res RestClient.post("#{url}?sign=#{sign}", body.to_json, content_type: :json, accept: :json)
+        parse_res RestClient.post("#{url}?sign=#{sign}", payload.to_json, content_type: :json, accept: :json)
       rescue => e
         error_result e.message
       end
