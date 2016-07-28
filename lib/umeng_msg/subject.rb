@@ -16,11 +16,11 @@ module UmengMsg
     end
 
     def push
-      post_youmeng(CANCEL_URL, Params.push_params(@platform, @options))
+      post_youmeng(PUSH_URL, Params.push_params(@platform, @options))
     end
 
     def check
-      post_youmeng(CANCEL_URL, Params.check_params(@platform, @options['task_id']))
+      post_youmeng(CHECK_URL, Params.check_params(@platform, @options['task_id']))
     end
 
     def cancel
