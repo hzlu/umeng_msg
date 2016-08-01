@@ -1,5 +1,5 @@
 # coding: utf-8
-require 'rest-client'
+require 'httpi'
 
 module UmengMsg
   class Subject
@@ -35,14 +35,19 @@ module UmengMsg
     def post_youmeng(url, payload)
       sign = Sign.generate @platform, url, payload
       begin
-        parse_res RestClient.post("#{url}?sign=#{sign}", payload.to_json, timeout: 3, open_timeout: 3, content_type: :json, accept: :json)
+        request = HTTPI::Request.new
+        request.url = "#{url}?sign=#{sign}"
+        request.open_timeout = 3
+        request.read_timeout = 3
+        request.body = payload.to_json
+        response = HTTPI.post(request)
+        parse_res(ActiveSupport::JSON.decode(response.body))
       rescue => e
         error_result e.message
       end
     end
 
-    def parse_res response
-      result            = JSON.parse(response)
+    def parse_res result
       {result: result['ret'], error_code: result['data']['error_code'], data: result['data']}
     end
 
