@@ -47,8 +47,7 @@ module UmengMsg
       end
     end
 
-    def parse_res response
-      result = JSON.parse(response)
+    def parse_res result
       {result: result['ret'], error_code: result['data']['error_code'], data: result['data']}
     end
 
